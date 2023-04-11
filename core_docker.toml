@@ -79,8 +79,8 @@ enable = false
 webhook = ""
 # telegram
 [notify.telegram]
-enable = false
-bottoken = ""
+enable = true
+bottoken = "6111539589:AAEFz6hESusRlvCopyLYLricGHnFSTdcR3E"
 # 企业微信
 [notify.wechat]
 enable = false
