@@ -7,7 +7,7 @@ services:
         ports: 
           - 8080:8080
         volumes: 
-          - $PWD/core_docker.toml:/app/core.toml
+          - $PWD/core.docker.toml:/app/core.toml
         depends_on:
           - mysql
           - redis
@@ -15,7 +15,7 @@ services:
         image: labulaka522/crocodile:worker
         container_name: crocodile_worker
         volumes: 
-            - $PWD/core_docker.toml:/app/core.toml
+            - $PWD/core.docker.toml:/app/core.toml
         depends_on:
           - master
     mysql:
