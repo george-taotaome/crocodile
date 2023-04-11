@@ -1,7 +1,7 @@
 version: '3.3'
 services: 
     master: 
-        image: labulaka522/crocodile
+        image: gorgee/crocodile
         container_name: crocodile_master
         restart: always
         ports: 
@@ -12,7 +12,7 @@ services:
           - mysql
           - redis
     worker:
-        image: labulaka522/crocodile:worker
+        image: gorgee/crocodile:worker
         container_name: crocodile_worker
         volumes: 
             - $PWD/core.docker.toml:/app/core.toml
