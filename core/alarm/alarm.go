@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"time"
 	"strconv"
+	"time"
 
 	"github.com/labulaka521/crocodile/common/log"
 	"github.com/labulaka521/crocodile/common/notify"
@@ -42,16 +42,16 @@ var send sendNotify
 
 const (
 	title     = "任务通知 {{ .TaskName }}[{{ .TaskID }}]"
-	alarmtmpl = `任务名称    : {{ .TaskName }}
-任务ID      : {{ .TaskID }}
-开始时间   : {{ .StartTime }}
-结束时间     : {{ .EndTime }}
-总运行时间: {{ .TotalRuntime }}
-状态      : {{ .Status -}}
+	alarmtmpl = `任务名称:    {{ .TaskName }}
+任务ID:     {{ .TaskID }}
+开始时间:    {{ .StartTime }}
+结束时间:    {{ .EndTime }}
+总运行时间:  {{ .TotalRuntime }}
+状态:       {{ .Status -}}
 {{if eq .Status "fail" }}
-错误任务名称 : {{ .ErrTaskName }} {{ .ErrTasktypestr }}
-错误任务ID   : {{ .ErrTaskID }}
-错误信息      : {{ .ErrMsg }}
+错误任务名称: {{ .ErrTaskName }} {{ .ErrTasktypestr }}
+错误任务ID:  {{ .ErrTaskID }}
+错误信息:    {{ .ErrMsg }}
 {{- end }}`
 )
 
@@ -193,7 +193,7 @@ func sendalarm(notifyuids []string, taskname, taskid, starttime, endtime, status
 		if user.Telegram != "" {
 			alarmTelegram = append(alarmTelegram, user.Telegram)
 		}
-		alarmUsernNames = append(alarmUsernNames,user.Name)
+		alarmUsernNames = append(alarmUsernNames, user.Name)
 	}
 
 	notifymsg := notifymsg{
