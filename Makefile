@@ -33,9 +33,9 @@ build_all: $(ALL:%=build/%)
 
 build/%: 
 	$(call build,$(firstword $(subst -, , $*)),$(word 2, $(subst -, ,$*)),$(word 3, $(subst -, ,$*)))
-	$(call md5,$(firstword $(subst -, , $*)),$(word 2, $(subst -, ,$*)),$(word 3, $(subst -, ,$*)))
-	$(call tar,$(firstword $(subst -, , $*)),$(word 2, $(subst -, ,$*)),$(word 3, $(subst -, ,$*)))
-	$(call delete,$(firstword $(subst -, , $*)),$(word 2, $(subst -, ,$*)),$(word 3, $(subst -, ,$*)))
+	# $(call md5,$(firstword $(subst -, , $*)),$(word 2, $(subst -, ,$*)),$(word 3, $(subst -, ,$*)))
+	# $(call tar,$(firstword $(subst -, , $*)),$(word 2, $(subst -, ,$*)),$(word 3, $(subst -, ,$*)))
+	# $(call delete,$(firstword $(subst -, , $*)),$(word 2, $(subst -, ,$*)),$(word 3, $(subst -, ,$*)))
 
 clean:
 	rm -rf ${BUILD_DIR}
