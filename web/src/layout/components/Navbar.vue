@@ -11,11 +11,11 @@
     <div class="right-menu">
       <el-badge :value="notifycount" class="badge">
         <router-link to="/notify">
-          <i style="font-size: 16px;height:32px;" class="el-icon-bell"></i>
+          <i style="font-size: 16px;height:32px;" class="el-icon-bell" />
         </router-link>
       </el-badge>
       <el-dropdown size="small" placement="top">
-        <div class="name">{{name}}</div>
+        <div class="name">{{ name }}</div>
         <el-dropdown-menu>
           <router-link to="/">
             <el-dropdown-item>首页</el-dropdown-item>
@@ -42,19 +42,19 @@ export default {
     Breadcrumb,
     Hamburger
   },
-  computed: {
-    ...mapGetters(["sidebar"])
-  },
-  created() {
-    this.startgetnotifys();
-    this.interval = setInterval(this.startgetnotifys, 5000);
-  },
   data() {
     return {
       name: this.$store.getters.name,
       notifycount: 0,
       interval: null
     };
+  },
+  computed: {
+    ...mapGetters(["sidebar"])
+  },
+  created() {
+    this.startgetnotifys();
+    this.interval = setInterval(this.startgetnotifys, 5000);
   },
   methods: {
     toggleSideBar() {
