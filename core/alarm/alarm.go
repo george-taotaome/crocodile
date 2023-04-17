@@ -3,9 +3,11 @@ package alarm
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -125,7 +127,12 @@ func JudgeNotify(tasklog *define.Log) {
 	}
 
 	if int(taskdata.AlarmStatus) == -2 || int(taskdata.AlarmStatus) == tasklog.Status {
-		err := sendalarm(taskdata.AlarmUserIds,
+		taskresps, err := json.Marshal(tasklog.TaskResps)
+		if err != nil {
+			log.Error("sendalarm failed", zap.Error(err))
+		}
+
+		err2 := sendalarm(taskdata.AlarmUserIds,
 			taskdata.Name,
 			tasklog.RunByTaskID,
 			utils.UnixToStr(tasklog.StartTime/1e3),
@@ -136,8 +143,9 @@ func JudgeNotify(tasklog *define.Log) {
 			tasklog.ErrTasktype.String(),
 			tasklog.ErrTask,
 			tasklog.ErrTaskID,
+			taskresps,
 		)
-		if err != nil {
+		if err2 != nil {
 			log.Error("sendalarm failed", zap.Error(err))
 		}
 	}
@@ -159,7 +167,7 @@ type notifymsg struct {
 
 // sendalarm will send notify to task's alarm users
 func sendalarm(notifyuids []string, taskname, taskid, starttime, endtime, status, totalruntime,
-	errmsg, errtasktypestr, errtaskname, errtaskid string) error {
+	errmsg, errtasktypestr, errtaskname, errtaskid string, taskresps []byte) error {
 	log.Info("start send alarm", zap.Strings("uids", notifyuids), zap.String("task", taskname))
 	if len(notifyuids) == 0 {
 		err := fmt.Errorf("task %s[%s] not exist alarm users", taskname, taskid)
@@ -298,9 +306,36 @@ func sendalarm(notifyuids []string, taskname, taskid, starttime, endtime, status
 
 	if send.telegram != nil && len(alarmTelegram) != 0 {
 		log.Debug("start send alarm to telegram", zap.Strings("alarmuser", alarmTelegram))
-		err := send.telegram.Send(alarmTelegram, titlebuf.String(), contentbuf.String())
-		if err != nil {
-			log.Error("send telegram notify failed", zap.Error(err))
+		re := regexp.MustCompile(`output\-+\\n(.+)\\n`)
+		match := re.FindStringSubmatch(string(taskresps))
+		if len(match) > 1 {
+			var data = ""
+			re := regexp.MustCompile(`\\\"`)
+			data = re.ReplaceAllString(string(match[1]), `"`)
+
+			re = regexp.MustCompile(`\\\\n`)
+			data = re.ReplaceAllString(data, `\n`)
+
+			re = regexp.MustCompile(`{.+}`)
+			match := re.FindString(data)
+
+			var m map[string]interface{}
+			json.Unmarshal([]byte(match), &m)
+
+			if message, ok := m["message"].(string); ok {
+				fmt.Println(message)
+				err := send.telegram.Send(alarmTelegram, titlebuf.String(), string(message))
+				if err != nil {
+					log.Error("send telegram notify failed", zap.Error(err))
+				}
+			} else {
+				log.Debug("send telegram notify failed: message not found or not a string")
+			}
+		} else {
+			err := send.telegram.Send(alarmTelegram, titlebuf.String(), contentbuf.String())
+			if err != nil {
+				log.Error("send telegram notify failed", zap.Error(err))
+			}
 		}
 	}
 	return nil
